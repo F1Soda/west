@@ -75,38 +75,7 @@ class Trasher extends Dog {
     }
 }
 
-class Gatling extends Creature {
-    constructor() {
-        super('Гатлинг', 6);
-    }
-
-    attack(gameContext, continuation) {
-        const taskQueue = new TaskQueue();
-
-        const {currentPlayer, oppositePlayer, position, updateView} = gameContext;
-
-        taskQueue.push(onDone => this.view.showAttack(onDone));
-
-        for (const card of oppositePlayer.table) {
-            taskQueue.push(onDone => {
-                const oppositeCard = card;
-
-                if (oppositeCard) {
-                    this.dealDamageToCreature(2, oppositeCard, gameContext, onDone);
-                } else {
-                    this.dealDamageToPlayer(1, gameContext, onDone);
-                }
-            });
-        }
-
-        taskQueue.continueWith(continuation);
-    }
-
-    getDescriptions() {
-        return ['Атакует всех противников по очереди', ...super.getDescriptions()];
-    }
-}
-
+// Колода Шерифа, нижнего игрока.
 const seriffStartDeck = [
     new Gatling(),
 ];

@@ -1,6 +1,7 @@
 import Card from './Card.js';
 import Game from './Game.js';
 import SpeedRate from './SpeedRate.js';
+import TaskQueue from './TaskQueue.js';
 
 // Отвечает является ли карта уткой.
 function isDuck(card) {
@@ -54,15 +55,65 @@ class Dog extends Creature {
     }
 }
 
-// Колода Шерифа, нижнего игрока.
+class Trasher extends Dog {
+    constructor() {
+        super();
+        this.name = 'Громила';
+        this.maxPower = 5;
+        this.currentPower = 5;
+    }
+
+    modifyTakenDamage(value, fromCard, gameContext, continuation) {
+        this.view.signalAbility(() => {
+            const reducedDamage = Math.max(0, value - 1);
+            continuation(reducedDamage);
+        });
+    }
+
+    getDescriptions() {
+        return ['Получает на 1 меньше урона', ...super.getDescriptions()];
+    }
+}
+
+class Gatling extends Creature {
+    constructor() {
+        super('Гатлинг', 6);
+    }
+
+    attack(gameContext, continuation) {
+        const taskQueue = new TaskQueue();
+
+        const {currentPlayer, oppositePlayer, position, updateView} = gameContext;
+
+        taskQueue.push(onDone => this.view.showAttack(onDone));
+
+        for (const card of oppositePlayer.table) {
+            taskQueue.push(onDone => {
+                const oppositeCard = card;
+
+                if (oppositeCard) {
+                    this.dealDamageToCreature(2, oppositeCard, gameContext, onDone);
+                } else {
+                    this.dealDamageToPlayer(1, gameContext, onDone);
+                }
+            });
+        }
+
+        taskQueue.continueWith(continuation);
+    }
+
+    getDescriptions() {
+        return ['Атакует всех противников по очереди', ...super.getDescriptions()];
+    }
+}
+
 const seriffStartDeck = [
-    new Duck(),
-    new Duck(),
-    new Duck(),
+    new Gatling(),
 ];
 
-// Колода Бандита, верхнего игрока.
 const banditStartDeck = [
+    new Trasher(),
+    new Dog(),
     new Dog(),
 ];
 

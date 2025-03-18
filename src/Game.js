@@ -18,14 +18,14 @@ const Game = function() {
             : copyAndReverse(this.topPlayerStartDeck);
 
         const bottomPlayer = new Player(this,
-            'Шериф уток', 'sheriff.png',
+            'Юрий Ромашов', 'sheriff.png',
             bottomPlayerDeck,
             new PlayerView(
                 document.getElementById('bottomPlayerRow'),
                 document.getElementById('bottomPlayerTable'), true));
 
         const topPlayer = new Player(this,
-            'Главарь псов', 'bandit.png',
+            'Дмитрий Косолобов', 'bandit.png',
             topPlayerDeck,
             new PlayerView(
                 document.getElementById('topPlayerRow'),
